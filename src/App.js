@@ -86,7 +86,7 @@ function Chatroom()
   
   
   const messageCollection=  firestore.collection('messages')
-  const query = messageCollection.orderBy('createdAt','asc').limit(30)
+  const query = messageCollection.orderBy('createdAt','asc')//NEW removed limit
   
   //controlled messageValue
   const [msgValue,setMsgValue] = useState('')
@@ -105,11 +105,13 @@ function Chatroom()
       console.log('ran')
       dummy.current.scrollIntoView({behaviour: 'smooth'})
       const section = document.querySelector('.section')
-      section.style.height = `${document.body.scrollHeight<= 0?'100%':(Math.max(document.body.scrollHeight+8,1)) + 'px'}`
+      // section.style.height = `${document.body.scrollHeight<= 0?'100%':(Math.max(document.body.scrollHeight+8,1)) + 'px'}`
+      // console.log(document.body.scrollHeight,window.innerHeight)
+      section.style.height = `${document.body.scrollHeight<window.innerHeight?window.innerHeight+'px':'100%'}`
     },1400)
     
     return ()=>{}
-  },[msgValue === null])
+  },)
   
   const sendMsg = async(e)=>{
     if(profane) setMsgValue('no')

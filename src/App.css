@@ -83,7 +83,7 @@ section{
   margin-bottom:1.2em; 
   display: flex;
   align-items: center;
-  background-color: rgb(53, 88, 88);
+  background-color: rgb(75, 99, 87);
   border-radius: 2em;
 }
 
@@ -98,12 +98,13 @@ section{
 }
 
 .other{
-  
+  background-color: rgb(35, 82, 82);
 }
 
 .message p{
   /* border:1px solid gold; */
   padding:0.5em 1em;
+  letter-spacing: 0.1em;
 }
 
 .message img{
