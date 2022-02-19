@@ -11,6 +11,13 @@ import { useEffect, useRef, useState } from 'react';
 
 import Filter from 'bad-words'
 
+//NEW
+import { query, where, orderBy, limit, onSnapshot } from "firebase/firestore"
+import { collection, doc, setDoc, addDoc, getDocs } from "firebase/firestore"
+import { getFirestore } from "firebase/firestore"
+
+
+
 //firebase init
 firebase.initializeApp({
   apiKey: "AIzaSyAFIn-r6UzZLnRZUkOmPcXMyzjMvYavVwM",
@@ -79,23 +86,53 @@ function SignOut()
   )
 }
 
+
 function Chatroom()
 {
   // const messageCollection = firebase.firestore.collection('messages')
   // const query = messageCollection.orderBy('createdAt').limit(30)
   
   
-  const messageCollection=  firestore.collection('messages')
-  const query = messageCollection.orderBy('createdAt','asc').limit(30)
+  // const messageCollection=  firestore.collection('messages')//OLD
+  // const query = messageCollection.orderBy('createdAt','asc').limit(30)//OLD
   
+
+
+  //NEW
+  let messages = []
+  const db = getFirestore()
+  const messagesRef = collection(db,'messages')
+  const messageQuery = query(collection(db,'messages'),orderBy('createdAt','desc'),limit(30))
+  let initialSnap 
+  useEffect(async ()=>{
+    console.log('awaiting..')
+    initialSnap = await getDocs(messageQuery)
+    initialSnap.forEach((snap)=>{
+      messages.push(snap)
+      // console.log(snap)
+    })
+  },[])
+  // let initialSnap = 
+  
+  
+  // console.log(typeof(messageQuery),messageQuery)
+  // console.log(messages)
+  const handleMessages = onSnapshot(messageQuery,(querySnapshot)=>{
+    messages = []
+    querySnapshot.forEach((doc)=>{
+      messages.push(doc.data())
+      
+    })
+    console.log('change,',messages)
+  })
+
   //controlled messageValue
   const [msgValue,setMsgValue] = useState('')
   const [profane,setProfane] = useState(false)
   
 
   //listen to data change using useCollectionData
-  const [messages] = useCollectionData(query,{idField: 'id'})
-  // console.log(messages)
+  // const [messages] = useCollectionData(query,{idField: 'id'})//OLD
 
   const dummy = useRef()
   let id
@@ -108,11 +145,10 @@ function Chatroom()
       section.style.height = `${document.body.scrollHeight<= 0?'100%':(Math.max(document.body.scrollHeight+8,1)) + 'px'}`
     },1400)
     
-    return ()=>{}
+    // return ()=>{}??OLD
   },[msgValue === null])
   
   const sendMsg = async(e)=>{
-    if(profane) setMsgValue('no')
     //write to firebase firestore
 
     e.preventDefault()
@@ -122,56 +158,37 @@ function Chatroom()
     //profanity check
     const filter = new Filter()
     if(filter.isProfane(msgValue)){
-      // console.log('is profane')
       setProfane(true)
-      // const profanity = msgValue
-      // const sanitized = filter.clean(msgValue)
-      // console.log(sanitized,'clean')
-      // setMsgValue(`I got kicked for saying ${sanitized} and need to get a pass to join the horde again...`)
-      // setMsgValue(()=>sanitized)
-      // setMsgValue('no')
-      // console.log(msgValue,'final')
-      // const bannedCollection =  firestore.collection('banned')
-      // await bannedCollection.add({
-      //   profanity,
-      //   createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      //   uid,
-      //   photoURL
-      // })
-      
-    }
-    await messageCollection.add({
+    }else setProfane(false)
+    // await messagesRef.add({//OLD
+    await addDoc(collection(db,"messages"),{
       text:profane?'I got kicked for saying %*$#! and need to get a pass to join the horde again...':msgValue,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       uid,
       photoURL
-    }).then((res)=>console.log(res))
+    }).then(res=>console.log('added doc',res)).catch((err)=>console.log(err))
+      
+    // }).then((res)=>console.log(res))//OLD
     setMsgValue('')
     setProfane(false)
     dummy.current.scrollIntoView({behaviour: 'smooth'})
   }
   const handleChange = (e)=>{
     
-    const filter = new Filter()
-    if(filter.isProfane(msgValue)){
-      console.log('is profane')
-      setProfane(true)
-      // const profanity = msgValue
-      // const sanitized = filter.clean(msgValue)
-      // console.log(sanitized,'clean')
-      // setMsgValue(`I got kicked for saying ${sanitized} and need to get a pass to join the horde again...`)
-      // setMsgValue(()=>sanitized)
-      // setMsgValue('no')
-      // console.log(msgValue,'final')
-    }
-    // else{
-      setMsgValue(e.target.value)
-    // }
+    // const filter = new Filter()
+    // if(filter.isProfane(msgValue)){
+    //   console.log('is profane')
+    //   setProfane(true)
+    // }else setProfane(false)
+    
+    setMsgValue(e.target.value)
   }
   return(
     <>
       <div className='msg-container'>
-        {messages && messages.map((message)=>{return <ChatMessage key={message.id} message={message} />})}
+        {/* {messages && messages.map((message)=>{return <ChatMessage key={message.id} message={message} />})} */}
+        {onSnapshot(messageQuery,(querySnapshot)=>{querySnapshot.forEach((doc)=>{messages=[];messages.push(doc.data())})})}
+        {messages.map((message)=> {return <ChatMessage key={message.id} message={message}/>})}
         
       </div>
       <form onSubmit={sendMsg} className='msg-form'>
@@ -189,7 +206,7 @@ function ChatMessage(props)
 {
   // console.log(props.message)
   const {text, uid, photoURL} = props.message
-
+  console.log(text,uid,photoURL)
   const messageClass = uid === auth.currentUser.uid? 'sender':'other'
 
   return (
