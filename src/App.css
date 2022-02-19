@@ -1,38 +1,112 @@
-.App {
-  text-align: center;
+*{
+  padding:0;
+  margin:0;
+  box-sizing: border-box;
+  font-family: 'Patrick Hand', cursive;
+  
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+section{
+  background-color: darkslategray;
+  /* height:100%; */
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.msg-container{
+  padding-bottom:3em;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.msg-form{
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  align-items: center;
+  position:fixed;
+  bottom:0;
+  margin:auto;
+  padding:auto;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  /* border:1px solid black; */
+  width:100%;
+  background: rgb(52, 70, 68);
 }
 
-.App-link {
-  color: #61dafb;
+.msg-field{
+  outline:none;
+  border:none;
+  padding:0.5em 1em;
+  border-radius: 2em;
+  position:relative;
+  width:20em;
+  height:2.5em;
+  font-size:1.1em;
+  letter-spacing: 0.1em;
+  font-weight: bold;
+  /* transform: translate(-50%); */
+  background: #344644;
+  box-shadow: inset 2px 1px 0 0 #2b3a38,
+  inset -1px -1px 0 0 #666,
+  1px 1px 3px 0 #2d3b3a;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.btn{
+  width:3.6em;
+  height:3.6em;
+  border-radius: 50%;
+  outline:none;
+  border:none;
+  margin-left:1em;
+  filter:drop-shadow(1px 1px 1px #222);
+  box-shadow: inset -1px -1px 0 0 #2b3a38,
+  inset 0px 1px 0 0 #666,
+  -2px -2px 0 0 #324442;
+  background:#344644;
+  transition: all 0.3s;
+}
+
+.btn:hover{
+  box-shadow: inset 2px 1px 0 0 #2b3a38,
+  inset -1px -1px 0 0 #666,
+  0 0 0 0 #000;
+}
+
+.btn:hover ion-icon{
+  margin:0.15em 0 0 0.27em;
+}
+
+.btn ion-icon{
+  font-size: 1.8em;
+  margin:0.1em 0 0 0.2em;
+  transition: all 0.3s;
+}
+
+.message{
+  margin-bottom:1.2em; 
+  display: flex;
+  align-items: center;
+  background-color: rgb(53, 88, 88);
+  border-radius: 2em;
+}
+
+.message:last-child{
+  margin-bottom:2em; 
+}
+
+.sender{
+  /* border:1px solid yellow; */
+  justify-content:right;
+  flex-direction: row-reverse;
+}
+
+.other{
+  
+}
+
+.message p{
+  /* border:1px solid gold; */
+  padding:0.5em 1em;
+}
+
+.message img{
+  border-radius: 50%;
+  width:3em;
 }
